@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,4 +54,51 @@ class JwtApplicationTests {
 		assertThat(secretKey1 == secretKey2).isTrue();
 	}
 
+	@Test
+	@DisplayName("access Token 발급")
+	void test5() {
+		Map<String, Object> claims = new HashMap<>();
+
+		claims.put("id", 2L);
+		claims.put("username", "user1");
+
+		String accessToken = jwtProvider.genToken(claims, 60*60*5);
+
+		System.out.println(accessToken);
+
+		assertThat(accessToken).isNotNull();
+	}
+
+	@Test
+	@DisplayName("access Token을 이용하여 claims 정보 가져오기")
+	void test6() {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", 1L);
+		claims.put("username", "admin");
+
+		// 10분
+		String accessToken = jwtProvider.genToken(claims, 60 * 10);
+
+		System.out.println("accessToken :" + accessToken);
+
+		assertThat(jwtProvider.verify(accessToken)).isTrue();
+
+		Map<String, Object> claimsFromToken = jwtProvider.getClaims(accessToken);
+		System.out.println("claimsFromToken : " + claimsFromToken);
+	}
+
+	@Test
+	@DisplayName("만료된 토큰이 유효하지 않은지")
+	void test7() {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", 1L);
+		claims.put("username", "admin");
+
+		// 10분
+		String accessToken = jwtProvider.genToken(claims, 60 * 10);
+
+		System.out.println("accessToken :" + accessToken);
+
+		assertThat(jwtProvider.verify(accessToken)).isFalse();
+	}
 }
