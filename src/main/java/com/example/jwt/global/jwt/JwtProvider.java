@@ -1,5 +1,6 @@
-package com.example.jwt;
+package com.example.jwt.global.jwt;
 
+import com.example.jwt.global.security.util.Util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -16,15 +17,12 @@ public class JwtProvider {
     private SecretKey cachedSecretKey;
     @Value("${custom.jwt.secretKey}")
     private String secretKeyPlain;
-
     private SecretKey _getSecretKey() {
         String keyBase64Encoded = Base64.getEncoder().encodeToString(secretKeyPlain.getBytes());
-
         return Keys.hmacShaKeyFor(keyBase64Encoded.getBytes());
     }
-
-    public SecretKey getCachedSecretKey() {
-        if(cachedSecretKey == null) cachedSecretKey = _getSecretKey();
+    public SecretKey getSecretKey() {
+        if (cachedSecretKey == null) cachedSecretKey = _getSecretKey();
         return cachedSecretKey;
     }
 
@@ -35,14 +33,14 @@ public class JwtProvider {
         return Jwts.builder()
                 .claim("body", Util.json.toStr(claims))
                 .setExpiration(accessTokenExpiresIn)
-                .signWith(getCachedSecretKey(), SignatureAlgorithm.HS512)
+                .signWith(getSecretKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public boolean verify(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(getCachedSecretKey())
+                    .setSigningKey(getSecretKey())
                     .build()
                     .parseClaimsJws(token);
         } catch (Exception e) {
@@ -54,7 +52,7 @@ public class JwtProvider {
 
     public Map<String, Object> getClaims(String token) {
         String body = Jwts.parserBuilder()
-                .setSigningKey(getCachedSecretKey())
+                .setSigningKey(getSecretKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -62,4 +60,5 @@ public class JwtProvider {
 
         return Util.toMap(body);
     }
+
 }
