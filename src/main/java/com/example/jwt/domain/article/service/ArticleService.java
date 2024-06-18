@@ -1,5 +1,6 @@
 package com.example.jwt.domain.article.service;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.example.jwt.domain.article.entity.Article;
 import com.example.jwt.domain.article.repository.ArticleRepository;
 import com.example.jwt.domain.member.entity.Member;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +33,9 @@ public class ArticleService {
 
     public List<Article> findAll() {
         return articleRepository.findAll();
+    }
+
+    public Optional<Article> findById(Long id) {
+        return articleRepository.findById(id);
     }
 }
