@@ -1,5 +1,6 @@
 package com.example.jwt.domain.member.entity;
 
+
 import com.example.jwt.global.jpa.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;

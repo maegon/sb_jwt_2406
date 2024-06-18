@@ -20,4 +20,4 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new User(member.getUsername(), member.getPassword(), member.getAuthorities());
     }
-}   
+}
